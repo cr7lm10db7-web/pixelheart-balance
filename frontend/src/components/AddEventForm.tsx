@@ -27,22 +27,22 @@ export const AddEventForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto my-0 px-4">
+    <div className="w-full max-w-2xl mx-auto px-1 md:px-4 mt-2 md:mt-0">
       <div
-        className={`pixel-border shadow-pixel p-6 transition-shadow ${flash === 'green' ? 'glow-green' : ''} ${flash === 'red' ? 'glow-red' : ''}`}
+        className={`pixel-border shadow-pixel p-3 md:p-6 transition-shadow ${flash === 'green' ? 'glow-green' : ''} ${flash === 'red' ? 'glow-red' : ''}`}
         style={{ backgroundColor: '#12122e', borderColor: '#3a3a6e' }}
       >
-        <h3 className="text-[10px] mb-6 tracking-widest uppercase pb-3"
+        <h3 className="hidden md:block text-[10px] mb-6 tracking-widest uppercase pb-3"
             style={{ color: '#8888bb', borderBottom: '4px solid #3a3a6e' }}>
           + Adaugă eveniment
         </h3>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-2 md:gap-5">
           {/* Text input */}
           <input
             type="text"
             placeholder="Ce s-a întâmplat?"
-            className="w-full px-3 py-3 pixel-border focus:outline-none text-[10px] transition-colors"
+            className="w-full px-2 py-2 md:px-3 md:py-3 pixel-border focus:outline-none text-[8px] md:text-[10px] transition-colors"
             style={{
               backgroundColor: '#1a1a3e',
               borderColor: '#3a3a6e',
@@ -52,87 +52,93 @@ export const AddEventForm: React.FC = () => {
             onChange={(e) => setTitle(e.target.value)}
           />
 
-          {/* Type selector */}
-          <div className="flex gap-3">
-            {(['good', 'bad'] as MomentType[]).map((t) => (
+          <div className="flex flex-col md:flex-col gap-2 md:gap-5 w-full">
+            {/* Row 1: Type + Person */}
+            <div className="flex flex-row gap-2 w-full">
+              {/* Type selector */}
+              <div className="flex gap-1 md:gap-3 flex-[0.8] md:flex-1">
+                {(['good', 'bad'] as MomentType[]).map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setType(t)}
+                    className="flex-1 py-1 md:py-3 text-[12px] md:text-[10px] pixel-border transition-all active:translate-y-[1px] active:shadow-none flex items-center justify-center font-bold font-sans md:font-pixel"
+                    style={{
+                      backgroundColor: type === t ? (t === 'good' ? '#1a3a1a' : '#3a1a1a') : '#1a1a3e',
+                      borderColor: type === t ? (t === 'good' ? '#3a9e3a' : '#b4202a') : '#3a3a6e',
+                      color: type === t ? (t === 'good' ? '#99e550' : '#d95763') : '#8888bb',
+                      boxShadow: type === t ? '2px 2px 0px 0px #081820' : '1px 1px 0px 0px #081820',
+                    }}
+                  >
+                    <span className="md:hidden">{t === 'good' ? '+' : '-'}</span>
+                    <span className="hidden md:inline">{t === 'good' ? '▲ POZITIV' : '▼ NEGATIV'}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Person selector */}
+              <div className="flex gap-1 md:gap-2 flex-[1.2] md:flex-1">
+                {PERSON_LABELS.map((p) => (
+                  <button
+                    key={p.value}
+                    type="button"
+                    onClick={() => setPerson(p.value)}
+                    className="flex-1 py-1 md:py-3 text-[12px] md:text-[10px] pixel-border transition-all active:translate-y-[1px] flex items-center justify-center font-sans md:font-pixel"
+                    style={{
+                      backgroundColor: person === p.value ? p.activeColor : '#1a1a3e',
+                      borderColor: person === p.value ? p.activeBorder : '#3a3a6e',
+                      color: person === p.value ? p.activeBorder : '#8888bb',
+                      boxShadow: person === p.value ? '2px 2px 0px 0px #081820' : '1px 1px 0px 0px #081820',
+                    }}
+                  >
+                    <span className="md:hidden">{p.label.split(' ')[0]}</span>
+                    <span className="hidden md:inline">{p.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Row 2: Weight + Submit */}
+            <div className="flex flex-row items-stretch gap-2 w-full">
+              {/* Weight */}
+              <div className="flex items-center justify-center gap-1 md:gap-3 bg-[#1a1a3e] px-2 py-1 md:py-0 md:bg-transparent pixel-border md:border-none border-[#3a3a6e]">
+                <span className="text-[7px] md:text-[8px] uppercase tracking-wider text-[#8888bb]">
+                  <span className="md:hidden">LV</span>
+                  <span className="hidden md:inline">Importanță:</span>
+                </span>
+                {[1, 2, 3].map((w) => (
+                  <button
+                    key={w}
+                    type="button"
+                    onClick={() => setWeight(w)}
+                    className="w-6 h-6 md:w-8 md:h-8 text-[8px] md:text-[10px] pixel-border transition-all active:translate-y-[1px] flex items-center justify-center"
+                    style={{
+                      backgroundColor: weight >= w ? '#2a2500' : '#1a1a3e',
+                      borderColor: weight >= w ? '#fbf236' : '#3a3a6e',
+                      color: weight >= w ? '#fbf236' : '#8888bb',
+                    }}
+                  >
+                    {w}
+                  </button>
+                ))}
+              </div>
+
+              {/* Submit */}
               <button
-                key={t}
-                type="button"
-                onClick={() => setType(t)}
-                className="flex-1 py-3 text-[10px] pixel-border transition-all active:translate-y-1 active:shadow-none"
+                type="submit"
+                className="flex-1 py-1 md:py-5 text-[8px] md:text-[12px] pixel-border shadow-pixel active:translate-y-[1px] active:shadow-none transition-all tracking-widest font-bold"
                 style={{
-                  backgroundColor: type === t
-                    ? (t === 'good' ? '#1a3a1a' : '#3a1a1a')
-                    : '#1a1a3e',
-                  borderColor: type === t
-                    ? (t === 'good' ? '#3a9e3a' : '#b4202a')
-                    : '#3a3a6e',
-                  color: type === t
-                    ? (t === 'good' ? '#99e550' : '#d95763')
-                    : '#8888bb',
-                  boxShadow: type === t ? '4px 4px 0px 0px #081820' : '2px 2px 0px 0px #081820',
+                  backgroundColor: '#1a1a3e',
+                  borderColor: '#fbf236',
+                  color: '#fbf236',
+                  boxShadow: '0 0 10px rgba(251, 242, 54, 0.2)',
                 }}
               >
-                {t === 'good' ? '▲ POZITIV' : '▼ NEGATIV'}
+                <span className="md:hidden">ADAUGĂ</span>
+                <span className="hidden md:inline">CONFIRMĂ EVENIMENT ›</span>
               </button>
-            ))}
+            </div>
           </div>
-
-          {/* Person selector */}
-          <div className="flex gap-2">
-            {PERSON_LABELS.map((p) => (
-              <button
-                key={p.value}
-                type="button"
-                onClick={() => setPerson(p.value)}
-                className="flex-1 py-3 text-[10px] pixel-border transition-all active:translate-y-1"
-                style={{
-                  backgroundColor: person === p.value ? p.activeColor : '#1a1a3e',
-                  borderColor: person === p.value ? p.activeBorder : '#3a3a6e',
-                  color: person === p.value ? p.activeBorder : '#8888bb',
-                  boxShadow: person === p.value ? '4px 4px 0px 0px #081820' : '2px 2px 0px 0px #081820',
-                }}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Weight */}
-          <div className="flex items-center gap-3">
-            <span className="text-[8px] uppercase tracking-wider" style={{ color: '#8888bb' }}>
-              Importanță:
-            </span>
-            {[1, 2, 3].map((w) => (
-              <button
-                key={w}
-                type="button"
-                onClick={() => setWeight(w)}
-                className="w-8 h-8 text-[10px] pixel-border transition-all active:translate-y-[2px]"
-                style={{
-                  backgroundColor: weight >= w ? '#2a2500' : '#1a1a3e',
-                  borderColor: weight >= w ? '#fbf236' : '#3a3a6e',
-                  color: weight >= w ? '#fbf236' : '#8888bb',
-                }}
-              >
-                {w}
-              </button>
-            ))}
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            className="w-full py-5 text-[12px] pixel-border shadow-pixel active:translate-y-1 active:shadow-none transition-all tracking-[0.2em] font-bold"
-            style={{
-              backgroundColor: '#1a1a3e',
-              borderColor: '#fbf236',
-              color: '#fbf236',
-              boxShadow: '0 0 15px rgba(251, 242, 54, 0.3)',
-            }}
-          >
-            CONFIRMĂ EVENIMENT ›
-          </button>
         </form>
       </div>
     </div>

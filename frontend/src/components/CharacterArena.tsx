@@ -420,9 +420,8 @@ export const CharacterArena: React.FC = () => {
       {/* Arena */}
       <ScreenShake trigger={shakeTrigger}>
         <div
-          className="relative w-full max-w-md pixel-border shadow-pixel overflow-hidden"
+          className="relative w-full max-w-md pixel-border shadow-pixel overflow-hidden h-[160px] md:h-[240px]"
           style={{
-            height: 240,
             backgroundColor: '#0d0d2b',
             borderColor: isDead ? '#d95763' : '#3a3a6e',
             backgroundImage:
@@ -532,10 +531,10 @@ export const CharacterArena: React.FC = () => {
         <span className="text-[6px] tracking-widest mb-1" style={{ color: '#8888bb' }}>
           ULTIMELE EVENIMENTE
         </span>
-        {moments.slice(-5).reverse().map((m) => (
+        {moments.slice(-5).reverse().map((m, idx) => (
           <div
             key={m.id}
-            className="flex items-center gap-2 px-2 py-1 pixel-border text-[7px]"
+            className={`flex items-center gap-2 px-2 py-1 pixel-border text-[7px] ${idx >= 2 ? 'hidden md:flex' : ''}`}
             style={{
               backgroundColor: m.type === 'good' ? '#0a1a0a' : '#1a0a0a',
               borderColor: m.type === 'good' ? '#3a9e3a' : '#b4202a',

@@ -14,7 +14,7 @@ const App: React.FC = () => {
   }, [fetchState]);
 
   return (
-    <div className="min-h-screen xl:h-screen w-screen overflow-x-hidden xl:overflow-hidden relative font-pixel select-none flex flex-col"
+    <div className="h-[100dvh] w-[100dvw] overflow-hidden relative font-pixel select-none flex flex-col"
          style={{
            background: 'linear-gradient(180deg, #1a1a3e 0%, #0d0d2b 50%, #1a0a2e 100%)',
          }}>
@@ -37,39 +37,30 @@ const App: React.FC = () => {
         }}
       />
 
-      <main className="w-full h-full max-w-[1200px] mx-auto px-2 py-2 flex flex-col relative z-10">
+      <main className="w-full h-full max-w-[1200px] mx-auto px-2 pb-2 md:pt-2 flex flex-col relative z-10 overflow-hidden">
         <div className="shrink-0">
           <Header />
         </div>
 
-        <div className="flex-1 flex flex-col xl:flex-row items-center xl:justify-center justify-start gap-4 xl:gap-12 min-h-0 w-full pb-12 xl:pb-0">
+        <div className="flex-1 flex flex-col xl:flex-row items-center justify-start xl:justify-center gap-1 md:gap-4 xl:gap-12 min-h-0 w-full pb-0">
            
            {/* LEFT COLUMN: Profiles & Arena */}
-           <div className="flex flex-col items-center justify-center xl:h-full xl:max-h-full xl:w-1/2 shrink-0 w-full">
-              <div className="scale-95 origin-bottom transform-gpu" style={{ marginTop: '-10px' }}>
+           <div className="flex flex-col items-center justify-center xl:h-full xl:max-h-full xl:w-1/2 shrink-0 w-full mb-1">
+              <div className="scale-[0.6] md:scale-95 origin-bottom transform-gpu" style={{ marginTop: '-40px', marginBottom: '-50px' }}>
                 <ProfileSection />
               </div>
-              <div className="scale-100 origin-top transform-gpu" style={{ marginTop: '-10px' }}>
+              <div className="scale-75 md:scale-100 origin-top transform-gpu" style={{ marginTop: '0px' }}>
                 <CharacterArena />
               </div>
            </div>
 
            {/* RIGHT COLUMN: Badge & Form */}
-           <div className="flex flex-col items-center justify-center gap-4 xl:w-1/2 w-full max-w-md xl:h-full shrink-0 mt-8 xl:mt-0">
-              <div className="transform-gpu w-full flex justify-center scale-95" style={{ marginBottom: '-10px' }}>
+           <div className="flex flex-col items-center justify-start gap-1 md:gap-4 xl:w-1/2 w-full max-w-md xl:h-full shrink-0 mt-0">
+              <div className="transform-gpu w-full flex justify-center scale-90 md:scale-95 hidden md:flex">
                  <RelationshipBadge />
               </div>
-              <div className="scale-95 origin-center transform-gpu w-full">
+              <div className="scale-95 md:scale-95 origin-center transform-gpu w-full">
                  <AddEventForm />
-              </div>
-              
-              <div className="mt-2 shrink-0 w-full px-4">
-                <button
-                  onClick={resetScale}
-                  className="w-full px-6 py-4 bg-[#2a1040] text-[#d95763] text-[10px] pixel-border border-[#d95763] shadow-pixel active:translate-y-1 active:shadow-none transition-all hover:bg-[#3a1050] tracking-widest"
-                >
-                  ↺ RESET GAME
-                </button>
               </div>
            </div>
         </div>
