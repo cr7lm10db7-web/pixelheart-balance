@@ -9,7 +9,7 @@ const PERSON_LABELS: { value: MomentPerson; label: string; activeColor: string; 
 ];
 
 export const AddEventForm: React.FC = () => {
-  const { addMoment } = useStore();
+  const { addMoment, isLocked } = useStore();
   const [title, setTitle]   = useState('');
   const [type, setType]     = useState<MomentType>('good');
   const [person, setPerson] = useState<MomentPerson>('together');
@@ -42,7 +42,8 @@ export const AddEventForm: React.FC = () => {
           <input
             type="text"
             placeholder="Ce s-a întâmplat?"
-            className="w-full px-1.5 py-1.5 md:px-3 md:py-3 pixel-border focus:outline-none text-[8px] md:text-[10px] transition-colors"
+            disabled={isLocked}
+            className={`w-full px-1.5 py-1.5 md:px-3 md:py-3 pixel-border focus:outline-none text-[8px] md:text-[10px] transition-colors ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
             style={{
               backgroundColor: '#1a1a3e',
               borderColor: '#3a3a6e',
@@ -61,6 +62,7 @@ export const AddEventForm: React.FC = () => {
                   <button
                     key={t}
                     type="button"
+                    disabled={isLocked}
                     onClick={() => setType(t)}
                     className="flex-1 py-1 md:py-3 text-[12px] md:text-[10px] pixel-border transition-all active:translate-y-[1px] active:shadow-none flex items-center justify-center font-bold font-sans md:font-pixel"
                     style={{
@@ -68,6 +70,8 @@ export const AddEventForm: React.FC = () => {
                       borderColor: type === t ? (t === 'good' ? '#3a9e3a' : '#b4202a') : '#3a3a6e',
                       color: type === t ? (t === 'good' ? '#99e550' : '#d95763') : '#8888bb',
                       boxShadow: type === t ? '2px 2px 0px 0px #081820' : '1px 1px 0px 0px #081820',
+                      opacity: isLocked ? 0.5 : 1,
+                      cursor: isLocked ? 'not-allowed' : 'pointer'
                     }}
                   >
                     <span>{t === 'good' ? '+' : '-'}</span>
@@ -81,6 +85,7 @@ export const AddEventForm: React.FC = () => {
                   <button
                     key={p.value}
                     type="button"
+                    disabled={isLocked}
                     onClick={() => setPerson(p.value)}
                     className="flex-1 py-1 md:py-3 text-[12px] md:text-[10px] pixel-border transition-all active:translate-y-[1px] flex items-center justify-center font-sans md:font-pixel"
                     style={{
@@ -88,6 +93,8 @@ export const AddEventForm: React.FC = () => {
                       borderColor: person === p.value ? p.activeBorder : '#3a3a6e',
                       color: person === p.value ? p.activeBorder : '#8888bb',
                       boxShadow: person === p.value ? '2px 2px 0px 0px #081820' : '1px 1px 0px 0px #081820',
+                      opacity: isLocked ? 0.5 : 1,
+                      cursor: isLocked ? 'not-allowed' : 'pointer'
                     }}
                   >
                     <span className="md:hidden">{p.label.split(' ')[0]}</span>
@@ -121,44 +128,22 @@ export const AddEventForm: React.FC = () => {
                 ))}
               </div>
 
-              {/* Random LV Dice (Auto-confirm, once per game) */}
-              <button
-                type="button"
-                disabled={useStore.getState().isDiceUsed}
-                onClick={() => {
-                  if (!title.trim()) return;
-                  addMoment({ type, person, title, weight }, true);
-                  setTitle('');
-                  setFlash(type === 'good' ? 'green' : 'red');
-                  setTimeout(() => setFlash(null), 600);
-                }}
-                className={`w-8 md:w-16 py-1 md:py-5 text-[10px] md:text-[18px] pixel-border shadow-pixel transition-all flex items-center justify-center ${
-                  useStore.getState().isDiceUsed 
-                    ? 'opacity-30 cursor-not-allowed grayscale' 
-                    : 'active:translate-y-[0.5px] active:scale-95 hover:bg-[#2a2a5e]'
-                }`}
-                title={useStore.getState().isDiceUsed ? "Zar folosit deja" : "Zar Aleatoriu (Auto-Confirm)"}
-                style={{
-                  backgroundColor: '#1a1a3e',
-                  borderColor: useStore.getState().isDiceUsed ? '#555' : '#8888bb',
-                  color: '#eeeeff',
-                }}
-              >
-                🎲
-              </button>
-
-              {/* Submit */}
+              {/* Action Button: No Confirm button anymore */}
               <button
                 type="submit"
-                className="flex-1 py-1 px-1 md:py-5 text-[8px] md:text-[12px] pixel-border shadow-pixel active:translate-y-[0.5px] active:shadow-none transition-all tracking-widest font-bold"
+                disabled={isLocked || !title.trim()}
+                className={`flex-1 py-1 px-1 md:py-5 text-[10px] md:text-[14px] pixel-border shadow-pixel active:translate-y-[0.5px] active:shadow-none transition-all tracking-widest font-bold flex items-center justify-center gap-2 ${
+                  isLocked || !title.trim() ? 'opacity-30 cursor-not-allowed grayscale' : ''
+                }`}
                 style={{
                   backgroundColor: '#1a1a3e',
-                  borderColor: '#fbf236',
-                  color: '#fbf236',
+                  borderColor: type === 'good' ? '#99e550' : '#fbf236',
+                  color: type === 'good' ? '#99e550' : '#fbf236',
                   boxShadow: '0 0 10px rgba(251, 242, 54, 0.1)',
                 }}
               >
-                CONFIRM
+                <span>{type === 'good' ? 'HEAL' : 'ROLL & ATTACK'}</span>
+                {type === 'bad' ? '🎲' : '❤️'}
               </button>
             </div>
           </div>

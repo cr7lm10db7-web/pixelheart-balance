@@ -211,7 +211,7 @@ const ScreenShake: React.FC<{ trigger: number; children: React.ReactNode }> = ({
 
 // ─── MAIN ARENA ─────────────────────────────────────────────────────────────
 export const CharacterArena: React.FC = () => {
-  const { avatars, profiles, boyHP, girlHP, maxHP, lastBattleEvent, clearBattleEvent, moments, resetScale, winStreak } = useStore();
+  const { avatars, profiles, boyHP, girlHP, maxHP, lastBattleEvent, clearBattleEvent, moments, resetScale, winStreak, setIsLocked, isLocked } = useStore();
 
   const [boyAnim, setBoyAnim] = useState<'idle' | 'attack' | 'hurt' | 'heal' | 'dead'>('idle');
   const [girlAnim, setGirlAnim] = useState<'idle' | 'attack' | 'hurt' | 'heal' | 'dead'>('idle');
@@ -287,6 +287,7 @@ export const CharacterArena: React.FC = () => {
     const isCritical = ev.diceResult === 6;
 
     const runAnimation = async () => {
+      setIsLocked(true);
       if (ev.type === 'attack') {
         // Phase 0: DICE ROLL above attacker
         if (ev.diceResult) {
@@ -327,68 +328,44 @@ export const CharacterArena: React.FC = () => {
         const dmgText = isCritical ? `CRITICAL! -${ev.amount} HP 💥` : `-${ev.amount} HP`;
         addFloat(dmgText, isCritical ? '#fbf236' : '#d95763', ev.target === 'boy' ? 50 : 200, isCritical);
 
-        await sleep(500);
-        setBoyAnim('idle');
-        setGirlAnim('idle');
-
+        await sleep(800);
       } else if (ev.type === 'heal') {
         playHealSound();
-
-        if (ev.target === 'boy' || ev.target === 'both') {
+        const side = ev.attacker === 'boy' ? 'left' : (ev.attacker === 'girl' ? 'right' : 'both');
+        
+        if (side === 'left' || side === 'both') {
           setBoyAnim('heal');
-          addEmoji('❤️', 'left');
+          addParticles(80, '#99e550');
           addFloat(`+${ev.amount} HP`, '#99e550', 50);
         }
-        if (ev.target === 'girl' || ev.target === 'both') {
+        if (side === 'right' || side === 'both') {
           setGirlAnim('heal');
-          addEmoji('❤️', 'right');
+          addParticles(260, '#99e550');
           addFloat(`+${ev.amount} HP`, '#99e550', 200);
         }
-
-        await sleep(800);
-        setBoyAnim('idle');
-        setGirlAnim('idle');
-
+        await sleep(1000);
       } else if (ev.type === 'self-damage') {
-        // MUTUAL ATTACK — both attack each other simultaneously!
-        playAttackSound();
-        setBoyAnim('attack');
-        setGirlAnim('attack');
-        addEmoji('😡', 'left');
-        addEmoji('😡', 'right');
-        await sleep(200);
-
-        // Both projectiles
-        addProjectile('left');
-        addProjectile('right');
-        await sleep(350);
-
         // Both hit
         playHitSound();
         setShakeTrigger(s => s + 1);
         setBoyAnim('hurt');
         setGirlAnim('hurt');
-        addEmoji('😢', 'left');
-        addEmoji('😢', 'right');
         addParticles(80, '#d95763');
         addParticles(260, '#d95763');
-        addFloat(`-${ev.amount}`, '#d95763', 50);
-        addFloat(`-${ev.amount}`, '#d95763', 200);
-
-        await sleep(500);
-        setBoyAnim('idle');
-        setGirlAnim('idle');
+        addFloat(`-${ev.amount} HP`, '#d95763', 50);
+        addFloat(`-${ev.amount} HP`, '#d95763', 200);
+        await sleep(1000);
       }
 
+      setBoyAnim('idle');
+      setGirlAnim('idle');
       clearBattleEvent();
       processingRef.current = false;
-      // Cooldown to prevent spam
-      await sleep(300);
-      setCooldown(false);
+      setIsLocked(false);
     };
 
     runAnimation();
-  }, [lastBattleEvent, isDead, clearBattleEvent, addFloat, addEmoji, addProjectile, addParticles]);
+  }, [lastBattleEvent, isDead, clearBattleEvent, addFloat, addEmoji, addProjectile, addParticles, setIsLocked]);
 
   // Character animation variants
   const getVariants = (anim: string, side: 'left' | 'right') => {
@@ -558,39 +535,50 @@ export const CharacterArena: React.FC = () => {
             )}
           </AnimatePresence>
         </div>
-      </ScreenShake>
 
-      {/* Event log (last 5) */}
-      <div className="w-full max-w-md mt-4 flex flex-col gap-1 px-2">
-        <span className="text-[6px] tracking-widest mb-1" style={{ color: '#8888bb' }}>
-          ULTIMELE EVENIMENTE
-        </span>
-        {moments.slice(-5).reverse().map((m, idx) => (
-          <div
-            key={m.id}
-            className={`flex items-center gap-2 px-2 py-1 pixel-border text-[7px] ${idx >= 2 ? 'hidden md:flex' : ''}`}
-            style={{
-              backgroundColor: m.type === 'good' ? '#0a1a0a' : '#1a0a0a',
-              borderColor: m.type === 'good' ? '#3a9e3a' : '#b4202a',
-              color: m.type === 'good' ? '#99e550' : '#d95763',
-            }}
-          >
-            <span>{m.type === 'good' ? '❤️' : '💥'}</span>
-            <span className="flex-1 truncate" style={{ color: '#eeeeff' }}>{m.title}</span>
-            {m.diceResult && (
-              <span className="text-[6px] px-1 bg-[#2a2a5e] pixel-border" style={{ color: '#fbf236' }}>
-                🎲 {m.diceResult}
-              </span>
+        {/* COMPACT BATTLE LOG (Max 3) */}
+        <div className="mt-4 w-full h-[96px] flex flex-col items-center">
+          <div className="w-full max-w-[320px] flex flex-col gap-1 overflow-hidden">
+            <div className="text-[6px] text-[#8888bb] uppercase tracking-tighter mb-1 self-start opacity-70">
+              LOG ACȚIUNI (LATEST 3)
+            </div>
+            <AnimatePresence initial={false}>
+              {moments.slice(-3).reverse().map((m) => {
+                const isBoy = m.person === 'boy';
+                const isTogether = m.person === 'together';
+                const name = isTogether ? 'AMBII' : (isBoy ? profiles.left.name : profiles.right.name);
+                const color = isTogether ? '#9b59b6' : (isBoy ? '#4A90D9' : '#e91e8c');
+                
+                return (
+                  <motion.div
+                    key={m.id}
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 5 }}
+                    className="flex items-center gap-2 px-2 py-1 text-[7px] pixel-border bg-[#12122b]/40 backdrop-blur-sm"
+                    style={{ borderColor: '#2a2a4e' }}
+                  >
+                    <span className="opacity-80">{m.type === 'good' ? '❤️' : '💥'}</span>
+                    <span className="flex-1 truncate font-medium" style={{ color: '#ccccff' }}>
+                      <span style={{ color }}>{name}</span>: {m.title}
+                    </span>
+                    {m.diceResult && (
+                      <span className="text-[#fbf236] font-bold">🎲{m.diceResult}</span>
+                    )}
+                    <span className="font-bold" style={{ color: m.type === 'good' ? '#99e550' : '#ff4444' }}>
+                      {m.type === 'good' ? `+${m.weight}` : `-${m.weight}`}
+                    </span>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+            {moments.length === 0 && (
+              <div className="text-[6px] text-[#444466] italic pl-1">Arenă pregătită...</div>
             )}
-            <span className="text-[6px]" style={{
-              color: m.person === 'boy' ? '#4A90D9' : m.person === 'girl' ? '#e91e8c' : '#9b59b6',
-            }}>
-              {m.person === 'boy' ? 'EL' : m.person === 'girl' ? 'EA' : 'AMBII'}
-            </span>
-            <span>{m.type === 'good' ? `+${m.weight}` : `-${m.weight}`}</span>
           </div>
-        ))}
-      </div>
+        </div>
+        </div>
+      </ScreenShake>
     </div>
   );
 };

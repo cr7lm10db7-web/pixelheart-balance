@@ -52,10 +52,12 @@ interface GameState {
   girlWins: number;
   winStreak: { who: 'boy' | 'girl' | null; count: number };
   isDiceUsed: boolean;
+  isLocked: boolean;
   // Animation queue
   lastBattleEvent: BattleEvent | null;
 
   fetchState: () => Promise<void>;
+  setIsLocked: (val: boolean) => void;
   updateProfileName: (side: 'left' | 'right', name: string) => Promise<void>;
   updateProfileImage: (side: 'left' | 'right', file: File) => Promise<void>;
   updateAvatar: (who: 'boy' | 'girl', config: Partial<AvatarConfig>) => void;
@@ -115,6 +117,7 @@ export const useStore = create<GameState>((set, get) => ({
   girlWins: 0,
   winStreak: { who: null, count: 0 },
   isDiceUsed: false,
+  isLocked: false,
   lastBattleEvent: null,
 
   fetchState: async () => {
@@ -294,6 +297,7 @@ export const useStore = create<GameState>((set, get) => ({
   },
 
   clearBattleEvent: () => set({ lastBattleEvent: null }),
+  setIsLocked: (val: boolean) => set({ isLocked: val }),
 }));
 
 // Keep legacy export for components that still use it
