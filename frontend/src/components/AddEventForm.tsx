@@ -121,6 +121,21 @@ export const AddEventForm: React.FC = () => {
                 ))}
               </div>
 
+              {/* Random LV Dice */}
+              <button
+                type="button"
+                onClick={() => setWeight(Math.floor(Math.random() * 3) + 1)}
+                className="w-8 md:w-16 py-1 md:py-5 text-[10px] md:text-[18px] pixel-border shadow-pixel active:translate-y-[0.5px] active:scale-95 transition-all flex items-center justify-center hover:bg-[#2a2a5e]"
+                title="Random LV"
+                style={{
+                  backgroundColor: '#1a1a3e',
+                  borderColor: '#8888bb',
+                  color: '#eeeeff',
+                }}
+              >
+                🎲
+              </button>
+
               {/* Submit */}
               <button
                 type="submit"
