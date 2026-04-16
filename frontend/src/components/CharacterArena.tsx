@@ -392,25 +392,25 @@ export const CharacterArena: React.FC = () => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center mt-2 mb-0">
+    <div className="w-full flex flex-col items-center mt-1 md:mt-2 mb-0">
 
       {/* HP Bars */}
-      <div className="w-full max-w-md flex justify-between items-start px-2 mb-3">
+      <div className="w-full max-w-md flex justify-between items-start px-2 mb-1 md:mb-3">
         <HPBar hp={boyHP} maxHP={maxHP} side="left" name={profiles.left.name} />
-        <div className="flex flex-col items-center gap-1 pt-1">
-          <span className="text-[6px] tracking-widest" style={{ color: '#d95763' }}>⚔</span>
+        <div className="flex flex-col items-center gap-1 pt-0.5 md:pt-1">
+          <span className="text-[5px] md:text-[6px] tracking-widest" style={{ color: '#d95763' }}>⚔</span>
         </div>
         <HPBar hp={girlHP} maxHP={maxHP} side="right" name={profiles.right.name} />
       </div>
 
       {/* Hearts row */}
-      <div className="w-full max-w-md flex justify-between items-center px-2 mb-4">
-        <div className="flex gap-[2px]">
+      <div className="w-full max-w-md flex justify-between items-center px-1 md:px-2 mb-1 md:mb-4">
+        <div className="flex gap-[1px] md:gap-[2px]">
           {Array.from({ length: maxHP }).map((_, i) => (
             <MiniHeart key={i} filled={i < boyHP} />
           ))}
         </div>
-        <div className="flex gap-[2px]">
+        <div className="flex gap-[1px] md:gap-[2px]">
           {Array.from({ length: maxHP }).map((_, i) => (
             <MiniHeart key={i} filled={i < girlHP} />
           ))}
@@ -420,7 +420,7 @@ export const CharacterArena: React.FC = () => {
       {/* Arena */}
       <ScreenShake trigger={shakeTrigger}>
         <div
-          className="relative w-full max-w-md pixel-border shadow-pixel overflow-hidden h-[160px] md:h-[240px]"
+          className="relative w-full max-w-md pixel-border shadow-pixel overflow-hidden h-[130px] md:h-[240px]"
           style={{
             backgroundColor: '#0d0d2b',
             borderColor: isDead ? '#d95763' : '#3a3a6e',

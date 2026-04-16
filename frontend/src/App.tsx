@@ -38,29 +38,29 @@ const App: React.FC = () => {
         }}
       />
 
-      <main className="w-full h-full max-w-[1200px] mx-auto px-2 pb-2 md:pt-2 flex flex-col relative z-10 overflow-hidden">
-        <div className="shrink-0">
+      <main className="w-full h-[100dvh] max-w-[1200px] mx-auto px-1 pb-1 flex flex-col relative z-10 overflow-hidden">
+        <div className="shrink-0 flex-none z-20">
           <Header />
         </div>
 
-        <div className="flex-1 flex flex-col xl:flex-row items-center justify-start xl:justify-center gap-1 md:gap-4 xl:gap-12 min-h-0 w-full pb-0">
+        <div className="flex-1 flex flex-col xl:flex-row items-center justify-start xl:justify-center gap-0 md:gap-4 xl:gap-12 min-h-0 w-full pb-0 relative z-10 overflow-hidden">
            
            {/* LEFT COLUMN: Profiles & Arena */}
-           <div className="flex flex-col items-center justify-center xl:h-full xl:max-h-full xl:w-1/2 shrink-0 w-full mb-1">
-              <div className="scale-[0.6] md:scale-95 origin-bottom transform-gpu" style={{ marginTop: '-40px', marginBottom: '-50px' }}>
+           <div className="flex flex-col items-center justify-start xl:justify-center xl:h-full xl:max-h-full xl:w-1/2 shrink-0 w-full mb-0">
+              <div className="w-full flex justify-center mb-0 md:mb-4 shrink-0 transition-transform origin-top">
                 <ProfileSection />
               </div>
-              <div className="scale-75 md:scale-100 origin-top transform-gpu" style={{ marginTop: '0px' }}>
+              <div className="w-full flex justify-center shrink-0 origin-top">
                 <CharacterArena />
               </div>
            </div>
 
            {/* RIGHT COLUMN: Badge & Form */}
-           <div className="flex flex-col items-center justify-start gap-1 md:gap-4 xl:w-1/2 w-full max-w-md xl:h-full shrink-0 mt-0">
-              <div className="transform-gpu w-full flex justify-center scale-90 md:scale-95 hidden md:flex">
+           <div className="flex flex-col items-center justify-start gap-0 md:gap-4 xl:w-1/2 w-full max-w-md xl:h-full flex-1">
+              <div className="w-full flex justify-center hidden md:flex shrink-0">
                  <RelationshipBadge />
               </div>
-              <div className="scale-95 md:scale-95 origin-center transform-gpu w-full">
+              <div className="w-full shrink-0 flex-1 flex flex-col justify-end md:justify-center pb-2">
                  <AddEventForm />
               </div>
            </div>
