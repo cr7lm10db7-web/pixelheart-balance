@@ -11,9 +11,10 @@ export const BalanceScale: React.FC = () => {
 
   const rotation = useMemo(() => {
     const { totalBalance } = computeScores(moments);
-    const maxDiff = 10;
-    // Clamp to ±15 degrees
+    const maxDiff = 5; // Reaching 5 points moves it to max tilt
+    // Positive balance = Good side (Left) sinks = Negative rotation in CSS
     let deg = (-totalBalance / maxDiff) * 15;
+    // Clamp to ±15 degrees
     if (deg > 15) deg = 15;
     if (deg < -15) deg = -15;
     return deg;

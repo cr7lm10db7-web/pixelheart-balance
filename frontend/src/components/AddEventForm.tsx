@@ -123,14 +123,15 @@ export const AddEventForm: React.FC = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full py-4 text-[10px] pixel-border shadow-pixel active:translate-y-1 active:shadow-none transition-all tracking-widest"
+            className="w-full py-5 text-[12px] pixel-border shadow-pixel active:translate-y-1 active:shadow-none transition-all tracking-[0.2em] font-bold"
             style={{
               backgroundColor: '#1a1a3e',
-              borderColor: '#6c3483',
-              color: '#eeeeff',
+              borderColor: '#fbf236',
+              color: '#fbf236',
+              boxShadow: '0 0 15px rgba(251, 242, 54, 0.3)',
             }}
           >
-            CONFIRMĂ ›
+            CONFIRMĂ EVENIMENT ›
           </button>
         </form>
       </div>

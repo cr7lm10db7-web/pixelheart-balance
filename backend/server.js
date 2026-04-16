@@ -40,7 +40,14 @@ app.get('/api/state', (req, res) => {
 });
 app.post('/api/moments', (req, res) => {
     const data = readData();
-    const newMoment = { ...req.body, id: Math.random().toString(36).substr(2, 9), date: new Date().toISOString() };
+    const newMoment = {
+        ...req.body,
+        id: Math.random().toString(36).substr(2, 9),
+        date: new Date().toISOString(),
+        // Persist offsets if provided, otherwise generate them (for external API tools)
+        offsetX: req.body.offsetX ?? (Math.random() * 2 - 1),
+        offsetY: req.body.offsetY ?? Math.random()
+    };
     data.moments.push(newMoment);
     writeData(data);
     res.json(newMoment);

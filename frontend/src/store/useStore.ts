@@ -21,7 +21,17 @@ export interface Profile {
   imageUrl: string | null;
 }
 
-interface BalanceState {
+// Animation event that the arena listens to
+export interface BattleEvent {
+  id: string;
+  type: 'attack' | 'heal' | 'self-damage';
+  attacker: 'boy' | 'girl' | 'both';
+  target: 'boy' | 'girl' | 'both';
+  amount: number;
+  title: string;
+}
+
+interface GameState {
   profiles: {
     left: Profile;
     right: Profile;
@@ -31,6 +41,13 @@ interface BalanceState {
     girl: AvatarConfig;
   };
   moments: Moment[];
+  // HP system
+  boyHP: number;
+  girlHP: number;
+  maxHP: number;
+  // Animation queue
+  lastBattleEvent: BattleEvent | null;
+
   fetchState: () => Promise<void>;
   updateProfileName: (side: 'left' | 'right', name: string) => Promise<void>;
   updateProfileImage: (side: 'left' | 'right', file: File) => Promise<void>;
@@ -38,9 +55,11 @@ interface BalanceState {
   addMoment: (moment: Omit<Moment, 'id' | 'date' | 'offsetX' | 'offsetY'>) => Promise<void>;
   removeMoment: (id: string) => Promise<void>;
   resetScale: () => Promise<void>;
+  clearBattleEvent: () => void;
 }
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+const MAX_HP = 10;
 
 function seededRandom(seed: string): number {
   let h = 0;
@@ -48,7 +67,31 @@ function seededRandom(seed: string): number {
   return ((h >>> 0) / 0xFFFFFFFF);
 }
 
-export const useStore = create<BalanceState>((set) => ({
+// Compute HP from moments history
+function computeHP(moments: Moment[]): { boyHP: number; girlHP: number } {
+  let boyHP = MAX_HP;
+  let girlHP = MAX_HP;
+
+  moments.forEach((m) => {
+    if (m.type === 'good') {
+      // Heal: person heals themselves
+      if (m.person === 'boy' || m.person === 'together') boyHP += m.weight;
+      if (m.person === 'girl' || m.person === 'together') girlHP += m.weight;
+    } else {
+      // Attack: person attacks the OTHER
+      if (m.person === 'boy') girlHP -= m.weight; // Boy attacks Girl
+      if (m.person === 'girl') boyHP -= m.weight;  // Girl attacks Boy
+      if (m.person === 'together') { boyHP -= m.weight; girlHP -= m.weight; }
+    }
+  });
+
+  return {
+    boyHP: Math.max(0, Math.min(MAX_HP, boyHP)),
+    girlHP: Math.max(0, Math.min(MAX_HP, girlHP)),
+  };
+}
+
+export const useStore = create<GameState>((set) => ({
   profiles: {
     left: { name: 'Alex', imageUrl: null },
     right: { name: 'Maria', imageUrl: null },
@@ -58,6 +101,10 @@ export const useStore = create<BalanceState>((set) => ({
     girl: { ...DEFAULT_GIRL_AVATAR },
   },
   moments: [],
+  boyHP: MAX_HP,
+  girlHP: MAX_HP,
+  maxHP: MAX_HP,
+  lastBattleEvent: null,
 
   fetchState: async () => {
     try {
@@ -70,7 +117,8 @@ export const useStore = create<BalanceState>((set) => ({
           offsetX: m.offsetX ?? seededRandom(m.id + 'x') * 2 - 1,
           offsetY: m.offsetY ?? seededRandom(m.id + 'y'),
         }));
-        set({ profiles: data.profiles, moments });
+        const hp = computeHP(moments);
+        set({ profiles: data.profiles, moments, ...hp });
       }
     } catch {
       console.warn('Backend unavailable, using local fallback state.');
@@ -123,6 +171,40 @@ export const useStore = create<BalanceState>((set) => ({
     const offsetX = seededRandom(id + 'x') * 2 - 1;
     const offsetY = seededRandom(id + 'y');
     const full: Moment = { ...moment, id, date: new Date().toISOString(), offsetX, offsetY };
+
+    // Build battle event
+    let battleEvent: BattleEvent;
+    if (moment.type === 'good') {
+      battleEvent = {
+        id,
+        type: 'heal',
+        attacker: moment.person === 'together' ? 'both' : moment.person,
+        target: moment.person === 'together' ? 'both' : moment.person,
+        amount: moment.weight,
+        title: moment.title,
+      };
+    } else {
+      if (moment.person === 'together') {
+        battleEvent = {
+          id,
+          type: 'self-damage',
+          attacker: 'both',
+          target: 'both',
+          amount: moment.weight,
+          title: moment.title,
+        };
+      } else {
+        battleEvent = {
+          id,
+          type: 'attack',
+          attacker: moment.person,
+          target: moment.person === 'boy' ? 'girl' : 'boy',
+          amount: moment.weight,
+          title: moment.title,
+        };
+      }
+    }
+
     try {
       const res = await fetch(`${API_URL}/moments`, {
         method: 'POST',
@@ -131,24 +213,35 @@ export const useStore = create<BalanceState>((set) => ({
       });
       if (res.ok) {
         const newMoment = await res.json();
-        set((state) => ({ moments: [...state.moments, { ...full, ...newMoment }] }));
+        const newMoments = [...useStore.getState().moments, { ...full, ...newMoment }];
+        const hp = computeHP(newMoments);
+        set({ moments: newMoments, ...hp, lastBattleEvent: battleEvent });
         return;
       }
     } catch {}
-    set((state) => ({ moments: [...state.moments, full] }));
+    const newMoments = [...useStore.getState().moments, full];
+    const hp = computeHP(newMoments);
+    set({ moments: newMoments, ...hp, lastBattleEvent: battleEvent });
   },
 
   removeMoment: async (id) => {
     try { await fetch(`${API_URL}/moments/${id}`, { method: 'DELETE' }); } catch {}
-    set((state) => ({ moments: state.moments.filter((m) => m.id !== id) }));
+    set((state) => {
+      const moments = state.moments.filter((m) => m.id !== id);
+      const hp = computeHP(moments);
+      return { moments, ...hp };
+    });
   },
 
   resetScale: async () => {
     try { await fetch(`${API_URL}/reset`, { method: 'POST' }); } catch {}
-    set({ moments: [] });
+    set({ moments: [], boyHP: MAX_HP, girlHP: MAX_HP, lastBattleEvent: null });
   },
+
+  clearBattleEvent: () => set({ lastBattleEvent: null }),
 }));
 
+// Keep legacy export for components that still use it
 export function computeScores(moments: Moment[]) {
   let boyScore = 0;
   let girlScore = 0;

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Header } from './components/Header';
 import { ProfileSection } from './components/ProfileSection';
-import { BalanceScale } from './components/BalanceScale';
+import { CharacterArena } from './components/CharacterArena';
 import { RelationshipBadge } from './components/RelationshipBadge';
 import { AddEventForm } from './components/AddEventForm';
 import { useStore } from './store/useStore';
@@ -42,10 +42,10 @@ const App: React.FC = () => {
 
         <ProfileSection />
 
-        {/* Clear separator before balance */}
         <div className="my-4" />
 
-        <BalanceScale />
+        {/* ⚔️ CHARACTER ARENA — replaces old BalanceScale */}
+        <CharacterArena />
 
         <div className="my-6" />
 

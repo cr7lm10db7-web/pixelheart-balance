@@ -36,12 +36,11 @@ export const Bubble: React.FC<BubbleProps> = ({ moment, plateWidth, index }) => 
   const personBorder = PERSON_BORDER[moment.person];
   const size       = 18 + moment.weight * 4;
 
-  // Grid layout: evenly space bubbles, slight jitter
-  const maxPerRow = Math.max(1, Math.floor(plateWidth / (size + 6)));
-  const col       = index % maxPerRow;
-  const row       = Math.floor(index / maxPerRow);
-  const jitterX   = moment.offsetX * 4;
-  const x         = col * (size + 6) + size / 2 + jitterX;
+  // Use the persistent offsetX/Y for position. Plate is PLATE_W wide.
+  // We want to keep bubbles between ~10% and 90% of width
+  const x = (moment.offsetX * 0.4 + 0.5) * plateWidth;
+  const row = index % 3; // Stack in small groups
+  const yOffset = row * (size * 0.4);
 
   // Stagger float animation per bubble
   const floatDelay = (index * 0.4) % 2.5;
@@ -60,7 +59,8 @@ export const Bubble: React.FC<BubbleProps> = ({ moment, plateWidth, index }) => 
         style={{
           position: 'absolute',
           left: x,
-          bottom: 16 + row * (size + 6),
+          transform: 'translateX(-50%)', // Center on the x coordinate
+          bottom: 16 + yOffset,
           width: size,
           height: size,
           backgroundColor: bgColor,
