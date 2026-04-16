@@ -392,7 +392,7 @@ export const CharacterArena: React.FC = () => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center my-6">
+    <div className="w-full flex flex-col items-center mt-2 mb-0">
 
       {/* HP Bars */}
       <div className="w-full max-w-md flex justify-between items-start px-2 mb-3">

@@ -27,7 +27,7 @@ export const AddEventForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto my-8 px-4">
+    <div className="w-full max-w-2xl mx-auto my-0 px-4">
       <div
         className={`pixel-border shadow-pixel p-6 transition-shadow ${flash === 'green' ? 'glow-green' : ''} ${flash === 'red' ? 'glow-red' : ''}`}
         style={{ backgroundColor: '#12122e', borderColor: '#3a3a6e' }}

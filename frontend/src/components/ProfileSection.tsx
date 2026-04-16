@@ -14,7 +14,7 @@ export const ProfileSection: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center my-6">
+    <div className="flex flex-col items-center mb-2">
       {/* Profiles row */}
       <div className="flex justify-center items-end gap-6 md:gap-16">
 
@@ -56,7 +56,7 @@ export const ProfileSection: React.FC = () => {
       </div>
 
       {/* Avatar customization panels */}
-      <div className="flex justify-center gap-8 md:gap-16 mt-4 w-full">
+      <div className="flex justify-center gap-8 md:gap-16 mt-2 w-full scale-90">
         <AvatarBuilder who="boy" label="AVATAR EL" accentColor="#4A90D9" />
         <AvatarBuilder who="girl" label="AVATAR EA" accentColor="#e91e8c" />
       </div>
