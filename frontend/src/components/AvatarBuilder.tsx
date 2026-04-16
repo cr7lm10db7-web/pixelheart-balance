@@ -21,7 +21,7 @@ export const AvatarBuilder: React.FC<AvatarBuilderProps> = ({ who, label, accent
   const set = (partial: Partial<AvatarConfig>) => updateAvatar(who, partial);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center relative">
       {/* Toggle button */}
       <button
         onClick={() => setOpen(!open)}
@@ -38,111 +38,107 @@ export const AvatarBuilder: React.FC<AvatarBuilderProps> = ({ who, label, accent
       {/* Panel */}
       {open && (
         <div
-          className="mt-3 pixel-border shadow-pixel p-4 w-64 md:w-72 flex flex-col gap-4"
+          className="mt-3 pixel-border shadow-pixel p-3 md:p-4 w-60 md:w-64 flex flex-col gap-2 md:gap-4 z-50 md:absolute md:top-full"
           style={{ backgroundColor: '#0d0d2b', borderColor: accentColor }}
         >
-          {/* Live preview */}
-          <div className="flex items-center justify-center py-2"
+          {/* Live preview (Hidden on desktop builder to save space) */}
+          <div className="flex md:hidden items-center justify-center py-2"
                style={{ backgroundColor: '#1a1a3e', border: `2px solid ${accentColor}` }}>
-            <AvatarPreview config={config} size={80} />
+            <AvatarPreview config={config} size={60} />
           </div>
 
-          <p className="text-[7px] text-center tracking-widest" style={{ color: accentColor }}>
+          <p className="text-[7px] text-center tracking-widest hidden md:block" style={{ color: accentColor }}>
             {label}
           </p>
 
-          {/* Hair style */}
-          <Section title="COAFURĂ">
-            <div className="flex flex-wrap gap-1">
-              {HAIR_STYLES.map((hs) => (
-                <OptionBtn
-                  key={hs.value}
-                  active={config.hairStyle === hs.value}
-                  accent={accentColor}
-                  onClick={() => set({ hairStyle: hs.value as HairStyle })}
-                >
-                  {hs.label}
-                </OptionBtn>
-              ))}
-            </div>
-          </Section>
+          <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
+            <Section title="STIL">
+              <div className="flex flex-wrap gap-1">
+                {HAIR_STYLES.map((hs) => (
+                  <OptionBtn
+                    key={hs.value}
+                    active={config.hairStyle === hs.value}
+                    accent={accentColor}
+                    onClick={() => set({ hairStyle: hs.value as HairStyle })}
+                  >
+                    {hs.label}
+                  </OptionBtn>
+                ))}
+              </div>
+            </Section>
 
-          {/* Hair color */}
-          <Section title="CULOARE PĂR">
-            <div className="flex flex-wrap gap-1">
-              {HAIR_COLORS.map((hc) => (
-                <ColorBtn
-                  key={hc.value}
-                  color={hc.value}
-                  active={config.hairColor === hc.value}
-                  accent={accentColor}
-                  onClick={() => set({ hairColor: hc.value })}
-                />
-              ))}
-            </div>
-          </Section>
+            <Section title="C.PĂR">
+              <div className="flex flex-wrap gap-1">
+                {HAIR_COLORS.map((hc) => (
+                  <ColorBtn
+                    key={hc.value}
+                    color={hc.value}
+                    active={config.hairColor === hc.value}
+                    accent={accentColor}
+                    onClick={() => set({ hairColor: hc.value })}
+                  />
+                ))}
+              </div>
+            </Section>
 
-          {/* Skin tone */}
-          <Section title="TEN">
-            <div className="flex flex-wrap gap-1">
-              {SKIN_TONES.map((st) => (
-                <ColorBtn
-                  key={st.value}
-                  color={st.value}
-                  active={config.skinTone === st.value}
-                  accent={accentColor}
-                  onClick={() => set({ skinTone: st.value })}
-                />
-              ))}
-            </div>
-          </Section>
+            <Section title="TEN">
+              <div className="flex flex-wrap gap-1">
+                {SKIN_TONES.map((st) => (
+                  <ColorBtn
+                    key={st.value}
+                    color={st.value}
+                    active={config.skinTone === st.value}
+                    accent={accentColor}
+                    onClick={() => set({ skinTone: st.value })}
+                  />
+                ))}
+              </div>
+            </Section>
 
-          {/* Clothes style */}
-          <Section title="HAINE">
-            <div className="flex flex-wrap gap-1">
-              {CLOTHES_STYLES.map((cs) => (
-                <OptionBtn
-                  key={cs.value}
-                  active={config.clothesStyle === cs.value}
-                  accent={accentColor}
-                  onClick={() => set({ clothesStyle: cs.value as ClothesStyle })}
-                >
-                  {cs.label}
-                </OptionBtn>
-              ))}
-            </div>
-          </Section>
+            <Section title="HAINE">
+              <div className="flex flex-wrap gap-1">
+                {CLOTHES_STYLES.map((cs) => (
+                  <OptionBtn
+                    key={cs.value}
+                    active={config.clothesStyle === cs.value}
+                    accent={accentColor}
+                    onClick={() => set({ clothesStyle: cs.value as ClothesStyle })}
+                  >
+                    {cs.label}
+                  </OptionBtn>
+                ))}
+              </div>
+            </Section>
 
-          {/* Clothes color */}
-          <Section title="CULOARE HAINE">
-            <div className="flex flex-wrap gap-1">
-              {CLOTHES_COLORS.map((cc) => (
-                <ColorBtn
-                  key={cc.value}
-                  color={cc.value}
-                  active={config.clothesColor === cc.value}
-                  accent={accentColor}
-                  onClick={() => set({ clothesColor: cc.value })}
-                />
-              ))}
-            </div>
-          </Section>
+            <Section title="C.HNE">
+              <div className="flex flex-wrap gap-1">
+                {CLOTHES_COLORS.map((cc) => (
+                  <ColorBtn
+                    key={cc.value}
+                    color={cc.value}
+                    active={config.clothesColor === cc.value}
+                    accent={accentColor}
+                    onClick={() => set({ clothesColor: cc.value })}
+                  />
+                ))}
+              </div>
+            </Section>
 
-          {/* Accessories */}
-          <Section title="ACCESORII">
-            <div className="flex flex-wrap gap-1">
-              {ACCESSORIES.map((ac) => (
-                <OptionBtn
-                  key={ac.value}
-                  active={config.accessory === ac.value}
-                  accent={accentColor}
-                  onClick={() => set({ accessory: ac.value as Accessory })}
-                >
-                  {ac.label}
-                </OptionBtn>
-              ))}
-            </div>
-          </Section>
+            <Section title="ACC">
+              <div className="flex flex-wrap gap-1">
+                {ACCESSORIES.map((ac) => (
+                  <OptionBtn
+                    key={ac.value}
+                    active={config.accessory === ac.value}
+                    accent={accentColor}
+                    onClick={() => set({ accessory: ac.value as Accessory })}
+                  >
+                    {ac.label}
+                  </OptionBtn>
+                ))}
+              </div>
+            </Section>
+          </div>
         </div>
       )}
     </div>

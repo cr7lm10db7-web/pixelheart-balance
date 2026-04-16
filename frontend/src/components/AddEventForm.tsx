@@ -70,8 +70,7 @@ export const AddEventForm: React.FC = () => {
                       boxShadow: type === t ? '2px 2px 0px 0px #081820' : '1px 1px 0px 0px #081820',
                     }}
                   >
-                    <span className="md:hidden">{t === 'good' ? '+' : '-'}</span>
-                    <span className="hidden md:inline">{t === 'good' ? '▲ POZITIV' : '▼ NEGATIV'}</span>
+                    <span>{t === 'good' ? '+' : '-'}</span>
                   </button>
                 ))}
               </div>
@@ -103,8 +102,7 @@ export const AddEventForm: React.FC = () => {
               {/* Weight */}
               <div className="flex items-center justify-center gap-1 md:gap-3 bg-[#1a1a3e] px-1 md:px-2 py-0.5 md:py-0 md:bg-transparent pixel-border md:border-none border-[#3a3a6e]">
                 <span className="text-[6px] md:text-[8px] uppercase tracking-wider text-[#8888bb]">
-                  <span className="md:hidden">LV</span>
-                  <span className="hidden md:inline">Importanță:</span>
+                  LV
                 </span>
                 {[1, 2, 3].map((w) => (
                   <button
@@ -134,8 +132,7 @@ export const AddEventForm: React.FC = () => {
                   boxShadow: '0 0 10px rgba(251, 242, 54, 0.1)',
                 }}
               >
-                <span className="md:hidden">ADAUGĂ</span>
-                <span className="hidden md:inline">CONFIRMĂ EVENIMENT ›</span>
+                CONFIRM
               </button>
             </div>
           </div>
