@@ -577,7 +577,6 @@ export const CharacterArena: React.FC = () => {
             )}
           </div>
         </div>
-        </div>
       </ScreenShake>
     </div>
   );
