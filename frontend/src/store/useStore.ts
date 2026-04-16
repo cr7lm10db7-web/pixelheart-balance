@@ -78,9 +78,9 @@ function computeHP(moments: Moment[]): { boyHP: number; girlHP: number } {
       if (m.person === 'boy' || m.person === 'together') boyHP += m.weight;
       if (m.person === 'girl' || m.person === 'together') girlHP += m.weight;
     } else {
-      // Attack: person attacks the OTHER
-      if (m.person === 'boy') girlHP -= m.weight; // Boy attacks Girl
-      if (m.person === 'girl') boyHP -= m.weight;  // Girl attacks Boy
+      // Attack: person who did the negative event gets attacked
+      if (m.person === 'boy') boyHP -= m.weight;  // He did bad -> She attacks him
+      if (m.person === 'girl') girlHP -= m.weight; // She did bad -> He attacks her
       if (m.person === 'together') { boyHP -= m.weight; girlHP -= m.weight; }
     }
   });
@@ -197,8 +197,8 @@ export const useStore = create<GameState>((set) => ({
         battleEvent = {
           id,
           type: 'attack',
-          attacker: moment.person,
-          target: moment.person === 'boy' ? 'girl' : 'boy',
+          attacker: moment.person === 'boy' ? 'girl' : 'boy', // If he did bad, she attacks
+          target: moment.person,                              // Target is the one who did bad
           amount: moment.weight,
           title: moment.title,
         };

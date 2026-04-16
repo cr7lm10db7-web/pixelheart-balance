@@ -14,7 +14,7 @@ const App: React.FC = () => {
   }, [fetchState]);
 
   return (
-    <div className="h-screen w-screen overflow-hidden relative font-pixel select-none flex flex-col"
+    <div className="min-h-screen xl:h-screen w-screen overflow-x-hidden xl:overflow-hidden relative font-pixel select-none flex flex-col"
          style={{
            background: 'linear-gradient(180deg, #1a1a3e 0%, #0d0d2b 50%, #1a0a2e 100%)',
          }}>
@@ -42,10 +42,10 @@ const App: React.FC = () => {
           <Header />
         </div>
 
-        <div className="flex-1 flex flex-col xl:flex-row items-center justify-center gap-4 xl:gap-12 min-h-0 w-full">
+        <div className="flex-1 flex flex-col xl:flex-row items-center xl:justify-center justify-start gap-4 xl:gap-12 min-h-0 w-full pb-12 xl:pb-0">
            
            {/* LEFT COLUMN: Profiles & Arena */}
-           <div className="flex flex-col items-center justify-center h-full max-h-full xl:w-1/2 shrink-0">
+           <div className="flex flex-col items-center justify-center xl:h-full xl:max-h-full xl:w-1/2 shrink-0 w-full">
               <div className="scale-95 origin-bottom transform-gpu" style={{ marginTop: '-10px' }}>
                 <ProfileSection />
               </div>
@@ -55,7 +55,7 @@ const App: React.FC = () => {
            </div>
 
            {/* RIGHT COLUMN: Badge & Form */}
-           <div className="flex flex-col items-center justify-center gap-4 xl:w-1/2 w-full max-w-md h-full shrink-0">
+           <div className="flex flex-col items-center justify-center gap-4 xl:w-1/2 w-full max-w-md xl:h-full shrink-0 mt-8 xl:mt-0">
               <div className="transform-gpu w-full flex justify-center scale-95" style={{ marginBottom: '-10px' }}>
                  <RelationshipBadge />
               </div>
