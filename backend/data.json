@@ -1,0 +1,54 @@
+{
+  "moments": [
+    {
+      "type": "good",
+      "person": "together",
+      "title": "sex",
+      "weight": 3,
+      "id": "7136lhs09",
+      "date": "2026-04-16T14:05:10.679Z",
+      "offsetX": 0.9453039122618045,
+      "offsetY": 0.9726519563637329
+    },
+    {
+      "type": "bad",
+      "person": "girl",
+      "title": "f",
+      "weight": 3,
+      "id": "vxi9de6xy",
+      "date": "2026-04-16T14:05:27.664Z",
+      "offsetX": 0.8736481819938982,
+      "offsetY": 0.9368240912297797
+    },
+    {
+      "type": "bad",
+      "person": "girl",
+      "title": "v",
+      "weight": 3,
+      "id": "2vutkbl9k",
+      "date": "2026-04-16T14:05:35.931Z",
+      "offsetX": 0.2542116258419611,
+      "offsetY": 0.6271058131538112
+    },
+    {
+      "type": "bad",
+      "person": "girl",
+      "title": "vv",
+      "weight": 3,
+      "id": "h4vlf2nw2",
+      "date": "2026-04-16T14:05:39.427Z",
+      "offsetX": -0.2967134651953153,
+      "offsetY": 0.351643267635173
+    }
+  ],
+  "profiles": {
+    "left": {
+      "name": "Liviu",
+      "imageUrl": "http://localhost:3001/uploads/1776342322920-IMG_7349.jpeg"
+    },
+    "right": {
+      "name": "Bianca",
+      "imageUrl": "http://localhost:3001/uploads/1776342329566-IMG_7278.jpeg"
+    }
+  }
+}
