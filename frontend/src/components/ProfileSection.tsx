@@ -79,17 +79,17 @@ const PixelAvatarBox: React.FC<PixelAvatarBoxProps> = ({ profile, onUpload, bord
       className="flex flex-col items-center group relative cursor-pointer"
       onClick={() => fileInputRef.current?.click()}
     >
-      <div className="w-10 h-10 md:w-24 md:h-24 pixel-border shadow-pixel flex items-center justify-center p-0 md:p-1 active:translate-y-1 transition-all"
+      <div className="w-10 h-10 md:w-24 md:h-24 pixel-border shadow-pixel flex items-center justify-center overflow-hidden active:translate-y-1 transition-all relative"
            style={{ backgroundColor: '#1a1a3e', borderColor }}>
         {profile.imageUrl ? (
           <img
-            src={profile.imageUrl} alt={profile.name}
-            className="w-full h-full object-cover pixelate"
-            style={{ border: `1px solid ${borderColor}` }}
+            src={profile.imageUrl}
+            alt={profile.name}
+            className="w-full h-full object-cover pixelate block"
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center"
-               style={{ backgroundColor: '#2a2a5e', border: `1px solid ${borderColor}` }}>
+               style={{ backgroundColor: '#2a2a5e' }}>
             <span className="text-[4px] md:text-[7px] font-pixel text-center leading-[5px] md:leading-4" style={{ color: '#8888bb' }}>
               PIC
             </span>

@@ -51,6 +51,7 @@ interface GameState {
   boyWins: number;
   girlWins: number;
   winStreak: { who: 'boy' | 'girl' | null; count: number };
+  isDiceUsed: boolean;
   // Animation queue
   lastBattleEvent: BattleEvent | null;
 
@@ -58,7 +59,7 @@ interface GameState {
   updateProfileName: (side: 'left' | 'right', name: string) => Promise<void>;
   updateProfileImage: (side: 'left' | 'right', file: File) => Promise<void>;
   updateAvatar: (who: 'boy' | 'girl', config: Partial<AvatarConfig>) => void;
-  addMoment: (moment: Omit<Moment, 'id' | 'date' | 'offsetX' | 'offsetY'>) => Promise<void>;
+  addMoment: (moment: Omit<Moment, 'id' | 'date' | 'offsetX' | 'offsetY'>, usedDice?: boolean) => Promise<void>;
   removeMoment: (id: string) => Promise<void>;
   resetScale: () => Promise<void>;
   clearBattleEvent: () => void;
@@ -113,6 +114,7 @@ export const useStore = create<GameState>((set, get) => ({
   boyWins: 0,
   girlWins: 0,
   winStreak: { who: null, count: 0 },
+  isDiceUsed: false,
   lastBattleEvent: null,
 
   fetchState: async () => {
@@ -132,6 +134,7 @@ export const useStore = create<GameState>((set, get) => ({
           moments,
           boyWins: data.wins?.boy || 0,
           girlWins: data.wins?.girl || 0,
+          isDiceUsed: !!data.isDiceUsed,
           ...hp
         });
       }
@@ -181,7 +184,7 @@ export const useStore = create<GameState>((set, get) => ({
     }));
   },
 
-  addMoment: async (moment) => {
+  addMoment: async (moment, usedDice) => {
     const id = Math.random().toString(36).substr(2, 9);
     const offsetX = seededRandom(id + 'x') * 2 - 1;
     const offsetY = seededRandom(id + 'y');
@@ -189,13 +192,17 @@ export const useStore = create<GameState>((set, get) => ({
     let diceResult: number | undefined;
     let finalWeight = moment.weight;
 
-    if (moment.type === 'bad') {
+    if (moment.type === 'bad' || usedDice) {
       diceResult = Math.floor(Math.random() * 6) + 1;
       // 1->0.5, 2->1.0, 3->1.5, 4->2.0, 5->2.5, 6->3.0
       finalWeight = diceResult * 0.5;
     }
 
     const full: Moment = { ...moment, weight: finalWeight, id, date: new Date().toISOString(), offsetX, offsetY, diceResult };
+
+    if (usedDice) {
+      fetch(`${API_URL}/dice-used`, { method: 'POST' });
+    }
 
     // Build battle event
     let battleEvent: BattleEvent;
@@ -258,14 +265,14 @@ export const useStore = create<GameState>((set, get) => ({
           winUpdate = { boyWins: get().boyWins + 1, winStreak: { who: 'boy', count: newStreak } };
         }
 
-        set({ moments: newMoments, ...hp, ...winUpdate, lastBattleEvent: battleEvent });
+        set({ moments: newMoments, ...hp, ...winUpdate, lastBattleEvent: battleEvent, isDiceUsed: usedDice ? true : get().isDiceUsed });
         return;
       }
     } catch {}
 
     const newMoments = [...get().moments, full];
     const hp = computeHP(newMoments);
-    set({ moments: newMoments, ...hp, lastBattleEvent: battleEvent });
+    set({ moments: newMoments, ...hp, lastBattleEvent: battleEvent, isDiceUsed: usedDice ? true : get().isDiceUsed });
   },
 
   removeMoment: async (id) => {
@@ -278,8 +285,12 @@ export const useStore = create<GameState>((set, get) => ({
   },
 
   resetScale: async () => {
-    try { await fetch(`${API_URL}/reset`, { method: 'POST' }); } catch {}
-    set({ moments: [], boyHP: MAX_HP, girlHP: MAX_HP, lastBattleEvent: null });
+    try { await fetch(`${API_URL}/reset`, { method: 'POST' }); } catch {
+      // If backend fails, locally reset
+      set({ moments: [], boyHP: MAX_HP, girlHP: MAX_HP, lastBattleEvent: null, isDiceUsed: false });
+      return;
+    }
+    set({ moments: [], boyHP: MAX_HP, girlHP: MAX_HP, lastBattleEvent: null, isDiceUsed: false });
   },
 
   clearBattleEvent: () => set({ lastBattleEvent: null }),

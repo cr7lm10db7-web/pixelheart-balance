@@ -121,15 +121,26 @@ export const AddEventForm: React.FC = () => {
                 ))}
               </div>
 
-              {/* Random LV Dice */}
+              {/* Random LV Dice (Auto-confirm, once per game) */}
               <button
                 type="button"
-                onClick={() => setWeight(Math.floor(Math.random() * 3) + 1)}
-                className="w-8 md:w-16 py-1 md:py-5 text-[10px] md:text-[18px] pixel-border shadow-pixel active:translate-y-[0.5px] active:scale-95 transition-all flex items-center justify-center hover:bg-[#2a2a5e]"
-                title="Random LV"
+                disabled={useStore.getState().isDiceUsed}
+                onClick={() => {
+                  if (!title.trim()) return;
+                  addMoment({ type, person, title, weight }, true);
+                  setTitle('');
+                  setFlash(type === 'good' ? 'green' : 'red');
+                  setTimeout(() => setFlash(null), 600);
+                }}
+                className={`w-8 md:w-16 py-1 md:py-5 text-[10px] md:text-[18px] pixel-border shadow-pixel transition-all flex items-center justify-center ${
+                  useStore.getState().isDiceUsed 
+                    ? 'opacity-30 cursor-not-allowed grayscale' 
+                    : 'active:translate-y-[0.5px] active:scale-95 hover:bg-[#2a2a5e]'
+                }`}
+                title={useStore.getState().isDiceUsed ? "Zar folosit deja" : "Zar Aleatoriu (Auto-Confirm)"}
                 style={{
                   backgroundColor: '#1a1a3e',
-                  borderColor: '#8888bb',
+                  borderColor: useStore.getState().isDiceUsed ? '#555' : '#8888bb',
                   color: '#eeeeff',
                 }}
               >
