@@ -24,7 +24,7 @@ export const Header: React.FC = () => {
         ↺ RESET
       </button>
 
-      <h1 className="text-[5px] md:text-[10px] tracking-widest text-[#8888bb] mb-1 md:mb-5 uppercase mt-1 md:mt-0">💖 PixelHeart Balance 💖</h1>
+      <h1 className="hidden md:block text-[5px] md:text-[10px] tracking-widest text-[#8888bb] mb-1 md:mb-5 uppercase mt-1 md:mt-0">💖 PixelHeart Balance 💖</h1>
       <div className="flex flex-row items-center gap-1 md:gap-4 text-[9px] md:text-xl text-[#eeeeff] font-pixel pixel-border bg-[#1a1a3e] px-1 md:px-4 py-1 md:py-4 shadow-pixel border-[#3a3a6e] w-full max-w-[240px] md:max-w-none md:w-auto">
         <input
           className="bg-transparent border-b md:border-b-4 border-[#3a3a6e] focus:border-[#4A90D9] outline-none text-center w-[70px] md:w-40 transition-colors text-[#88ccff] truncate"

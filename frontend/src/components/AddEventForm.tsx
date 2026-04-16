@@ -27,9 +27,9 @@ export const AddEventForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-1 md:px-4 mt-1 md:mt-0">
+    <div className="w-full max-w-2xl mx-auto px-1 md:px-4 mt-0.5 md:mt-0">
       <div
-        className={`pixel-border shadow-pixel p-1.5 md:p-6 transition-shadow ${flash === 'green' ? 'glow-green' : ''} ${flash === 'red' ? 'glow-red' : ''}`}
+        className={`pixel-border shadow-pixel p-1 md:p-6 transition-shadow ${flash === 'green' ? 'glow-green' : ''} ${flash === 'red' ? 'glow-red' : ''}`}
         style={{ backgroundColor: '#12122e', borderColor: '#3a3a6e' }}
       >
         <h3 className="hidden md:block text-[10px] mb-6 tracking-widest uppercase pb-3"
@@ -37,7 +37,7 @@ export const AddEventForm: React.FC = () => {
           + Adaugă eveniment
         </h3>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-1.5 md:gap-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-1 md:gap-5">
           {/* Text input */}
           <input
             type="text"
@@ -52,9 +52,9 @@ export const AddEventForm: React.FC = () => {
             onChange={(e) => setTitle(e.target.value)}
           />
 
-          <div className="flex flex-col md:flex-col gap-1.5 md:gap-5 w-full">
+          <div className="flex flex-col md:flex-col gap-1 md:gap-5 w-full">
             {/* Row 1: Type + Person */}
-            <div className="flex flex-row gap-1.5 md:gap-2 w-full">
+            <div className="flex flex-row gap-1 md:gap-2 w-full">
               {/* Type selector */}
               <div className="flex gap-1 md:gap-3 flex-[0.8] md:flex-1">
                 {(['good', 'bad'] as MomentType[]).map((t) => (
@@ -99,10 +99,10 @@ export const AddEventForm: React.FC = () => {
             </div>
 
             {/* Row 2: Weight + Submit */}
-            <div className="flex flex-row items-stretch gap-1.5 md:gap-2 w-full">
+            <div className="flex flex-row items-stretch gap-1 md:gap-2 w-full">
               {/* Weight */}
               <div className="flex items-center justify-center gap-1 md:gap-3 bg-[#1a1a3e] px-1 md:px-2 py-0.5 md:py-0 md:bg-transparent pixel-border md:border-none border-[#3a3a6e]">
-                <span className="text-[7px] md:text-[8px] uppercase tracking-wider text-[#8888bb]">
+                <span className="text-[6px] md:text-[8px] uppercase tracking-wider text-[#8888bb]">
                   <span className="md:hidden">LV</span>
                   <span className="hidden md:inline">Importanță:</span>
                 </span>
@@ -111,7 +111,7 @@ export const AddEventForm: React.FC = () => {
                     key={w}
                     type="button"
                     onClick={() => setWeight(w)}
-                    className="w-5 h-5 md:w-8 md:h-8 text-[8px] md:text-[10px] pixel-border transition-all active:translate-y-[1px] flex items-center justify-center"
+                    className="w-5 h-5 md:w-8 md:h-8 text-[8px] md:text-[10px] pixel-border transition-all active:translate-y-[0.5px] flex items-center justify-center"
                     style={{
                       backgroundColor: weight >= w ? '#2a2500' : '#1a1a3e',
                       borderColor: weight >= w ? '#fbf236' : '#3a3a6e',
@@ -126,12 +126,12 @@ export const AddEventForm: React.FC = () => {
               {/* Submit */}
               <button
                 type="submit"
-                className="flex-1 py-1 px-1 md:py-5 text-[8px] md:text-[12px] pixel-border shadow-pixel active:translate-y-[1px] active:shadow-none transition-all tracking-widest font-bold"
+                className="flex-1 py-1 px-1 md:py-5 text-[8px] md:text-[12px] pixel-border shadow-pixel active:translate-y-[0.5px] active:shadow-none transition-all tracking-widest font-bold"
                 style={{
                   backgroundColor: '#1a1a3e',
                   borderColor: '#fbf236',
                   color: '#fbf236',
-                  boxShadow: '0 0 10px rgba(251, 242, 54, 0.2)',
+                  boxShadow: '0 0 10px rgba(251, 242, 54, 0.1)',
                 }}
               >
                 <span className="md:hidden">ADAUGĂ</span>

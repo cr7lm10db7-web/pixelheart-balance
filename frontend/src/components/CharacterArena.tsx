@@ -15,7 +15,7 @@ const HPBar: React.FC<{ hp: number; maxHP: number; side: 'left' | 'right'; name:
 
   return (
     <div className={`flex flex-col ${side === 'right' ? 'items-end' : 'items-start'} gap-1`}>
-      <span className="text-[7px] tracking-wider" style={{ color: '#8888bb' }}>
+      <span className="hidden md:block text-[7px] tracking-wider" style={{ color: '#8888bb' }}>
         {name}
       </span>
       <div className="w-28 md:w-36 h-5 pixel-border relative overflow-hidden"
@@ -392,10 +392,10 @@ export const CharacterArena: React.FC = () => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center mt-1 md:mt-2 mb-0">
+    <div className="w-full flex flex-col items-center mt-0.5 md:mt-2 mb-0">
 
       {/* HP Bars */}
-      <div className="w-full max-w-md flex justify-between items-start px-2 mb-1 md:mb-3">
+      <div className="w-full max-w-md flex justify-between items-start px-2 mb-0.5 md:mb-3">
         <HPBar hp={boyHP} maxHP={maxHP} side="left" name={profiles.left.name} />
         <div className="flex flex-col items-center gap-1 pt-0.5 md:pt-1">
           <span className="text-[5px] md:text-[6px] tracking-widest" style={{ color: '#d95763' }}>⚔</span>
@@ -403,8 +403,8 @@ export const CharacterArena: React.FC = () => {
         <HPBar hp={girlHP} maxHP={maxHP} side="right" name={profiles.right.name} />
       </div>
 
-      {/* Hearts row */}
-      <div className="w-full max-w-md flex justify-between items-center px-1 md:px-2 mb-1 md:mb-4">
+      {/* Hearts row (HIDDEN ON MOBILE) */}
+      <div className="hidden md:flex w-full max-w-md justify-between items-center px-1 md:px-2 mb-1 md:mb-4">
         <div className="flex gap-[1px] md:gap-[2px]">
           {Array.from({ length: maxHP }).map((_, i) => (
             <MiniHeart key={i} filled={i < boyHP} />
@@ -420,7 +420,7 @@ export const CharacterArena: React.FC = () => {
       {/* Arena */}
       <ScreenShake trigger={shakeTrigger}>
         <div
-          className="relative w-full max-w-md pixel-border shadow-pixel overflow-hidden h-[130px] md:h-[240px]"
+          className="relative w-full max-w-md pixel-border shadow-pixel overflow-hidden h-[110px] md:h-[240px]"
           style={{
             backgroundColor: '#0d0d2b',
             borderColor: isDead ? '#d95763' : '#3a3a6e',

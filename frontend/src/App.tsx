@@ -38,7 +38,7 @@ const App: React.FC = () => {
         }}
       />
 
-      <main className="w-full h-[100dvh] max-w-[1200px] mx-auto px-1 pb-1 flex flex-col relative z-10 overflow-hidden">
+      <main className="w-full h-[100dvh] max-w-[1200px] mx-auto px-0.5 pb-0.5 flex flex-col relative z-10 overflow-hidden">
         <div className="shrink-0 flex-none z-20">
           <Header />
         </div>
@@ -60,7 +60,7 @@ const App: React.FC = () => {
               <div className="w-full flex justify-center hidden md:flex shrink-0">
                  <RelationshipBadge />
               </div>
-              <div className="w-full shrink-0 flex-1 flex flex-col justify-end md:justify-center pb-2">
+              <div className="w-full shrink-0 flex-1 flex flex-col justify-end md:justify-center pb-0.5">
                  <AddEventForm />
               </div>
            </div>
