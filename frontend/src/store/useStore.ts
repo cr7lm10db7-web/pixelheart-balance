@@ -14,6 +14,7 @@ export interface Moment {
   date: string;
   offsetX: number;
   offsetY: number;
+  diceResult?: number;
 }
 
 export interface Profile {
@@ -194,7 +195,7 @@ export const useStore = create<GameState>((set, get) => ({
       finalWeight = diceResult * 0.5;
     }
 
-    const full: Moment = { ...moment, weight: finalWeight, id, date: new Date().toISOString(), offsetX, offsetY };
+    const full: Moment = { ...moment, weight: finalWeight, id, date: new Date().toISOString(), offsetX, offsetY, diceResult };
 
     // Build battle event
     let battleEvent: BattleEvent;

@@ -61,8 +61,8 @@ const FloatingText: React.FC<{
     animate={{ opacity: 0, y: y - 60, scale: large ? 2 : 1.2 }}
     transition={{ duration: 1.2, ease: 'easeOut' }}
     onAnimationComplete={onDone}
-    className={`absolute ${large ? 'text-[14px]' : 'text-[10px]'} font-bold pointer-events-none z-50 whitespace-nowrap`}
-    style={{ color, left: x, textShadow: `0 0 6px ${color}` }}
+    className={`absolute ${large ? 'text-[20px]' : 'text-[10px]'} font-bold pointer-events-none z-50 whitespace-nowrap`}
+    style={{ color, left: x, textShadow: `0 0 10px ${color}`, fontStyle: large ? 'italic' : 'normal' }}
   >
     {text}
   </motion.div>
@@ -290,9 +290,10 @@ export const CharacterArena: React.FC = () => {
       if (ev.type === 'attack') {
         // Phase 0: DICE ROLL above attacker
         if (ev.diceResult) {
-          const attackerX = ev.attacker === 'boy' ? 40 : 250;
+          // Center over attacker
+          const attackerX = ev.attacker === 'boy' ? 45 : 245; 
           addFloat(`🎲 ${ev.diceResult}`, '#fbf236', attackerX, true);
-          await sleep(400);
+          await sleep(600); // Wait longer for dice roll visibility
         }
 
         // Attacker emoji + sound
@@ -576,6 +577,11 @@ export const CharacterArena: React.FC = () => {
           >
             <span>{m.type === 'good' ? '❤️' : '💥'}</span>
             <span className="flex-1 truncate" style={{ color: '#eeeeff' }}>{m.title}</span>
+            {m.diceResult && (
+              <span className="text-[6px] px-1 bg-[#2a2a5e] pixel-border" style={{ color: '#fbf236' }}>
+                🎲 {m.diceResult}
+              </span>
+            )}
             <span className="text-[6px]" style={{
               color: m.person === 'boy' ? '#4A90D9' : m.person === 'girl' ? '#e91e8c' : '#9b59b6',
             }}>
