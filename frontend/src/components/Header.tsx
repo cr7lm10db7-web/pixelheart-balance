@@ -25,18 +25,32 @@ export const Header: React.FC = () => {
       </button>
 
       <h1 className="hidden md:block text-[5px] md:text-[10px] tracking-widest text-[#8888bb] mb-1 md:mb-5 uppercase mt-1 md:mt-0">💖 PixelHeart Balance 💖</h1>
-      <div className="flex flex-row items-center gap-1 md:gap-4 text-[9px] md:text-xl text-[#eeeeff] font-pixel pixel-border bg-[#1a1a3e] px-1 md:px-4 py-1 md:py-4 shadow-pixel border-[#3a3a6e] w-full max-w-[240px] md:max-w-none md:w-auto mx-auto">
-        <input
-          className="bg-transparent border-b md:border-b-4 border-[#3a3a6e] focus:border-[#4A90D9] outline-none text-center flex-1 w-0 md:w-40 transition-colors text-[#88ccff] truncate"
-          value={leftName}
-          onChange={(e) => handleLeft(e.target.value)}
-        />
-        <span className="text-[#d95763] animate-pulse mx-1 md:mx-2 text-[10px] md:text-2xl flex-none">❤️</span>
-        <input
-          className="bg-transparent border-b md:border-b-4 border-[#3a3a6e] focus:border-[#e91e8c] outline-none text-center flex-1 w-0 md:w-40 transition-colors text-[#ffaacc] truncate"
-          value={rightName}
-          onChange={(e) => handleRight(e.target.value)}
-        />
+      <div className="flex flex-row items-center gap-1 md:gap-4 text-[9px] md:text-xl text-[#eeeeff] font-pixel pixel-border bg-[#1a1a3e] px-1 md:px-4 py-1 md:py-4 shadow-pixel border-[#3a3a6e] w-full max-w-[240px] md:max-w-none md:w-auto mx-auto relative">
+        <div className="flex flex-col items-center flex-1">
+          <input
+            className="bg-transparent border-b md:border-b-4 border-[#3a3a6e] focus:border-[#4A90D9] outline-none text-center w-full md:w-40 transition-colors text-[#88ccff] truncate mb-0.5 md:mb-1"
+            value={leftName}
+            onChange={(e) => handleLeft(e.target.value)}
+          />
+          <div className="flex items-center gap-1 md:gap-2">
+            <span className="text-[6px] md:text-[10px] opacity-70">WINS:</span>
+            <span className="text-[10px] md:text-xl text-[#fbf236] font-bold">🏆 {useStore.getState().boyWins}</span>
+          </div>
+        </div>
+
+        <span className="text-[#d95763] animate-pulse mx-0.5 md:mx-2 text-[10px] md:text-2xl flex-none pt-2 md:pt-0">❤️</span>
+
+        <div className="flex flex-col items-center flex-1">
+          <input
+            className="bg-transparent border-b md:border-b-4 border-[#3a3a6e] focus:border-[#e91e8c] outline-none text-center w-full md:w-40 transition-colors text-[#ffaacc] truncate mb-0.5 md:mb-1"
+            value={rightName}
+            onChange={(e) => handleRight(e.target.value)}
+          />
+          <div className="flex items-center gap-1 md:gap-2">
+            <span className="text-[10px] md:text-xl text-[#fbf236] font-bold">{useStore.getState().girlWins} 🏆</span>
+            <span className="text-[6px] md:text-[10px] opacity-70">WINS</span>
+          </div>
+        </div>
       </div>
     </header>
   );

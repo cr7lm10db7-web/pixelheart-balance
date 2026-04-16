@@ -14,7 +14,14 @@ const DATA_FILE = path.join(__dirname, 'data.json');
 // Ensure directories and files exist
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR);
 if (!fs.existsSync(DATA_FILE)) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify({ moments: [], profiles: { left: { name: 'Alex', imageUrl: null }, right: { name: 'Maria', imageUrl: null } } }));
+  fs.writeFileSync(DATA_FILE, JSON.stringify({
+    moments: [],
+    profiles: {
+      left: { name: 'Alex', imageUrl: null },
+      right: { name: 'Maria', imageUrl: null }
+    },
+    wins: { boy: 0, girl: 0 }
+  }));
 }
 
 // Multer Config
@@ -25,7 +32,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 app.use('/uploads', express.static(UPLOAD_DIR));
 
-const readData = () => JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+const readData = () => {
+  const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+  if (!data.wins) data.wins = { boy: 0, girl: 0 }; // Migration
+  return data;
+};
 const writeData = (data: any) => fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 
 // API
@@ -39,6 +50,14 @@ app.post('/api/moments', (req, res) => {
   data.moments.push(newMoment);
   writeData(data);
   res.json(newMoment);
+});
+
+app.post('/api/wins/:side', (req, res) => {
+  const data = readData();
+  const side = req.params.side as 'boy' | 'girl';
+  data.wins[side] = (data.wins[side] || 0) + 1;
+  writeData(data);
+  res.json({ wins: data.wins });
 });
 
 app.delete('/api/moments/:id', (req, res) => {

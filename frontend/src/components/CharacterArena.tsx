@@ -137,42 +137,62 @@ const ImpactParticles: React.FC<{ x: number; color: string; onDone: () => void }
 );
 
 // ─── DEATH OVERLAY ──────────────────────────────────────────────────────────
-const DeathOverlay: React.FC<{ onRestart: () => void }> = ({ onRestart }) => (
+const DeathOverlay: React.FC<{
+  onRestart: () => void;
+  winner: string;
+  isStreak: boolean;
+  streakCount: number;
+}> = ({ onRestart, winner, isStreak, streakCount }) => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
-    className="absolute inset-0 z-[60] flex flex-col items-center justify-center"
-    style={{ backgroundColor: 'rgba(10,5,20,0.9)' }}
+    className="absolute inset-0 z-[60] flex flex-col items-center justify-center p-4 text-center"
+    style={{ backgroundColor: 'rgba(10,5,20,0.92)' }}
   >
     <motion.div
-      animate={{ scale: [1, 1.05, 1], opacity: [0.7, 1, 0.7] }}
-      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-      className="text-center"
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ type: 'spring', damping: 12 }}
     >
-      <div className="text-2xl mb-2">💔</div>
-      <div className="text-[10px] pixel-border px-6 py-3 mb-4"
+      <div className="text-3xl mb-1">🏆</div>
+      <div className="text-[12px] md:text-[14px] font-pixel text-[#fbf236] mb-1 tracking-widest uppercase">
+        {winner} WINS!
+      </div>
+
+      {isStreak && (
+        <motion.div
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 0.8, repeat: Infinity }}
+          className="text-[8px] md:text-[10px] text-[#ff6b6b] mb-4 font-bold tracking-tighter"
+        >
+          ON FIRE 🔥 {streakCount} WINS STREAK
+        </motion.div>
+      )}
+
+      <div className="text-[8px] pixel-border px-4 py-2 mt-2 inline-block"
            style={{
-             color: '#d95763',
-             backgroundColor: '#1a0a0a',
-             borderColor: '#d95763',
-             textShadow: '0 0 8px rgba(217,87,99,0.6)',
+             color: '#8888bb',
+             backgroundColor: '#1a1a3e',
+             borderColor: '#3a3a6e',
            }}>
-        E TIMPUL SĂ VĂ<br />DESPĂRȚIȚI...
+        RELAȚIA S-A SFÂRȘIT (RUNDA ACEASTA)
       </div>
     </motion.div>
+
     <motion.button
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1.5 }}
+      transition={{ delay: 0.5 }}
       onClick={onRestart}
-      className="text-[8px] px-5 py-3 pixel-border mt-4 active:translate-y-[2px] transition-all tracking-widest"
+      className="text-[9px] px-6 py-3 pixel-border mt-8 active:translate-y-[2px] transition-all tracking-widest font-bold"
       style={{
         backgroundColor: '#1a3a1a',
         borderColor: '#3a9e3a',
         color: '#99e550',
+        boxShadow: '0 4px 0 #0a1a0a'
       }}
     >
-      ↻ RESTART RELAȚIE
+      ↻ RESTART HP
     </motion.button>
   </motion.div>
 );
@@ -191,7 +211,7 @@ const ScreenShake: React.FC<{ trigger: number; children: React.ReactNode }> = ({
 
 // ─── MAIN ARENA ─────────────────────────────────────────────────────────────
 export const CharacterArena: React.FC = () => {
-  const { avatars, profiles, boyHP, girlHP, maxHP, lastBattleEvent, clearBattleEvent, moments, resetScale } = useStore();
+  const { avatars, profiles, boyHP, girlHP, maxHP, lastBattleEvent, clearBattleEvent, moments, resetScale, winStreak } = useStore();
 
   const [boyAnim, setBoyAnim] = useState<'idle' | 'attack' | 'hurt' | 'heal' | 'dead'>('idle');
   const [girlAnim, setGirlAnim] = useState<'idle' | 'attack' | 'hurt' | 'heal' | 'dead'>('idle');
@@ -264,11 +284,17 @@ export const CharacterArena: React.FC = () => {
     setCooldown(true);
     const ev = lastBattleEvent;
 
-    // 15% critical hit chance for attacks
-    const isCritical = ev.type === 'attack' && Math.random() < 0.15;
+    const isCritical = ev.diceResult === 6;
 
     const runAnimation = async () => {
       if (ev.type === 'attack') {
+        // Phase 0: DICE ROLL above attacker
+        if (ev.diceResult) {
+          const attackerX = ev.attacker === 'boy' ? 40 : 250;
+          addFloat(`🎲 ${ev.diceResult}`, '#fbf236', attackerX, true);
+          await sleep(400);
+        }
+
         // Attacker emoji + sound
         playAttackSound();
         addEmoji('😡', ev.attacker === 'boy' ? 'left' : 'right');
@@ -297,7 +323,7 @@ export const CharacterArena: React.FC = () => {
         addParticles(ev.target === 'boy' ? 80 : 260, '#d95763');
 
         // Damage text
-        const dmgText = isCritical ? `CRITICAL! -${ev.amount * 2}` : `-${ev.amount} HP`;
+        const dmgText = isCritical ? `CRITICAL! -${ev.amount} HP 💥` : `-${ev.amount} HP`;
         addFloat(dmgText, isCritical ? '#fbf236' : '#d95763', ev.target === 'boy' ? 50 : 200, isCritical);
 
         await sleep(500);
@@ -521,7 +547,14 @@ export const CharacterArena: React.FC = () => {
 
           {/* Death overlay */}
           <AnimatePresence>
-            {isDead && <DeathOverlay onRestart={handleRestart} />}
+            {isDead && (
+              <DeathOverlay
+                onRestart={handleRestart}
+                winner={boyHP <= 0 ? profiles.right.name : profiles.left.name}
+                isStreak={winStreak.count >= 2}
+                streakCount={winStreak.count}
+              />
+            )}
           </AnimatePresence>
         </div>
       </ScreenShake>

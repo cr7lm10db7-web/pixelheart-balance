@@ -29,6 +29,7 @@ export interface BattleEvent {
   target: 'boy' | 'girl' | 'both';
   amount: number;
   title: string;
+  diceResult?: number;
 }
 
 interface GameState {
@@ -45,6 +46,10 @@ interface GameState {
   boyHP: number;
   girlHP: number;
   maxHP: number;
+  // Win system
+  boyWins: number;
+  girlWins: number;
+  winStreak: { who: 'boy' | 'girl' | null; count: number };
   // Animation queue
   lastBattleEvent: BattleEvent | null;
 
@@ -86,12 +91,12 @@ function computeHP(moments: Moment[]): { boyHP: number; girlHP: number } {
   });
 
   return {
-    boyHP: Math.max(0, Math.min(MAX_HP, boyHP)),
-    girlHP: Math.max(0, Math.min(MAX_HP, girlHP)),
+    boyHP: Math.max(0, Math.min(MAX_HP, parseFloat(boyHP.toFixed(1)))),
+    girlHP: Math.max(0, Math.min(MAX_HP, parseFloat(girlHP.toFixed(1)))),
   };
 }
 
-export const useStore = create<GameState>((set) => ({
+export const useStore = create<GameState>((set, get) => ({
   profiles: {
     left: { name: 'Alex', imageUrl: null },
     right: { name: 'Maria', imageUrl: null },
@@ -104,6 +109,9 @@ export const useStore = create<GameState>((set) => ({
   boyHP: MAX_HP,
   girlHP: MAX_HP,
   maxHP: MAX_HP,
+  boyWins: 0,
+  girlWins: 0,
+  winStreak: { who: null, count: 0 },
   lastBattleEvent: null,
 
   fetchState: async () => {
@@ -118,7 +126,13 @@ export const useStore = create<GameState>((set) => ({
           offsetY: m.offsetY ?? seededRandom(m.id + 'y'),
         }));
         const hp = computeHP(moments);
-        set({ profiles: data.profiles, moments, ...hp });
+        set({
+          profiles: data.profiles,
+          moments,
+          boyWins: data.wins?.boy || 0,
+          girlWins: data.wins?.girl || 0,
+          ...hp
+        });
       }
     } catch {
       console.warn('Backend unavailable, using local fallback state.');
@@ -170,7 +184,17 @@ export const useStore = create<GameState>((set) => ({
     const id = Math.random().toString(36).substr(2, 9);
     const offsetX = seededRandom(id + 'x') * 2 - 1;
     const offsetY = seededRandom(id + 'y');
-    const full: Moment = { ...moment, id, date: new Date().toISOString(), offsetX, offsetY };
+
+    let diceResult: number | undefined;
+    let finalWeight = moment.weight;
+
+    if (moment.type === 'bad') {
+      diceResult = Math.floor(Math.random() * 6) + 1;
+      // 1->0.5, 2->1.0, 3->1.5, 4->2.0, 5->2.5, 6->3.0
+      finalWeight = diceResult * 0.5;
+    }
+
+    const full: Moment = { ...moment, weight: finalWeight, id, date: new Date().toISOString(), offsetX, offsetY };
 
     // Build battle event
     let battleEvent: BattleEvent;
@@ -180,7 +204,7 @@ export const useStore = create<GameState>((set) => ({
         type: 'heal',
         attacker: moment.person === 'together' ? 'both' : moment.person,
         target: moment.person === 'together' ? 'both' : moment.person,
-        amount: moment.weight,
+        amount: finalWeight,
         title: moment.title,
       };
     } else {
@@ -190,8 +214,9 @@ export const useStore = create<GameState>((set) => ({
           type: 'self-damage',
           attacker: 'both',
           target: 'both',
-          amount: moment.weight,
+          amount: finalWeight,
           title: moment.title,
+          diceResult,
         };
       } else {
         battleEvent = {
@@ -199,8 +224,9 @@ export const useStore = create<GameState>((set) => ({
           type: 'attack',
           attacker: moment.person === 'boy' ? 'girl' : 'boy', // If he did bad, she attacks
           target: moment.person,                              // Target is the one who did bad
-          amount: moment.weight,
+          amount: finalWeight,
           title: moment.title,
+          diceResult,
         };
       }
     }
@@ -213,13 +239,30 @@ export const useStore = create<GameState>((set) => ({
       });
       if (res.ok) {
         const newMoment = await res.json();
-        const newMoments = [...useStore.getState().moments, { ...full, ...newMoment }];
+        const currentMoments = get().moments;
+        const newMoments = [...currentMoments, { ...full, ...newMoment }];
         const hp = computeHP(newMoments);
-        set({ moments: newMoments, ...hp, lastBattleEvent: battleEvent });
+
+        // Win detection
+        let winUpdate = {};
+        if (hp.boyHP <= 0 && get().boyHP > 0) {
+          // girl wins
+          fetch(`${API_URL}/wins/girl`, { method: 'POST' });
+          const newStreak = get().winStreak.who === 'girl' ? get().winStreak.count + 1 : 1;
+          winUpdate = { girlWins: get().girlWins + 1, winStreak: { who: 'girl', count: newStreak } };
+        } else if (hp.girlHP <= 0 && get().girlHP > 0) {
+          // boy wins
+          fetch(`${API_URL}/wins/boy`, { method: 'POST' });
+          const newStreak = get().winStreak.who === 'boy' ? get().winStreak.count + 1 : 1;
+          winUpdate = { boyWins: get().boyWins + 1, winStreak: { who: 'boy', count: newStreak } };
+        }
+
+        set({ moments: newMoments, ...hp, ...winUpdate, lastBattleEvent: battleEvent });
         return;
       }
     } catch {}
-    const newMoments = [...useStore.getState().moments, full];
+
+    const newMoments = [...get().moments, full];
     const hp = computeHP(newMoments);
     set({ moments: newMoments, ...hp, lastBattleEvent: battleEvent });
   },
